@@ -33,7 +33,7 @@ if ($recaptcha) {
 } else {
     $hook->addError('g-recaptcha-response', $modx->lexicon('recaptchav3_check_empty_error'));
     $modx->log(MODX_LOG_LEVEL_ERROR, $modx->lexicon('recaptchav3_check_empty_error_log'));
-    return true;
+    return false;
 }
 
 return true;
