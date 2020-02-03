@@ -3,7 +3,7 @@ $public = $modx->getOption('formit.recaptcha_public_key');
 $action = $action ?: 'ajaxform';
 
 if (!$modx->getPlaceholder('rcv3_initialized')) {
-    $modx->regClientStartupScript('<script src="https://www.google.com/recaptcha/api.js?onload=ReCaptchaCallbackV3&render=' . $public . '"></script>');
+    $modx->regClientStartupScript('<script src="https://www.google.com/recaptcha/api.js?onload=ReCaptchaCallbackV3&render=' . $public . '" async></script>');
     $modx->regClientScript('
         <script>
             var ReCaptchaCallbackV3 = function() {
