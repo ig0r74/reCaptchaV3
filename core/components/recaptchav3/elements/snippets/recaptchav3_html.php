@@ -3,23 +3,23 @@ $public = $modx->getOption('formit.recaptcha_public_key');
 $action = $action ?: 'ajaxform';
 
 if (!$modx->getPlaceholder('rcv3_initialized')) {
-    $modx->regClientStartupScript('<script src="https://www.google.com/recaptcha/api.js?render=' . $public . '"></script>');
+    $modx->regClientStartupScript('<script src="https://www.google.com/recaptcha/api.js?onload=ReCaptchaCallbackV3&render=' . $public . '" async></script>');
     $modx->regClientScript('
         <script>
-            function grecaptchaExecute() {
-                grecaptcha.execute("' . $public . '", { action: "' . $action . '" })
-                .then(function(token) {
-                    $("[name =\'g-recaptcha-response\']").val(token);
+            var ReCaptchaCallbackV3 = function() {
+                grecaptcha.ready(function() {
+                    grecaptcha.reset = grecaptchaExecute;
+                    grecaptcha.reset();
                 });
-            }
-            grecaptcha.ready(function() {
-                grecaptchaExecute();
-            });
-            $(document).on("af_complete", function(event, response) {
-                if (response.success) {
-                    grecaptchaExecute();
-                }
-            });
+            };
+            function grecaptchaExecute() {
+                grecaptcha.execute("' . $public . '", { action: "' . $action . '" }).then(function(token) {
+                    var fieldsToken = document.querySelectorAll("[name =\'g-recaptcha-response\']");
+                    Array.prototype.forEach.call(fieldsToken, function(el, i){
+                        el.value = token;
+                    });
+                });
+            };
         </script>
     ', true);
     $modx->setPlaceholder('rcv3_initialized', 1);
