@@ -2,16 +2,16 @@
 
 if (!defined('MODX_CORE_PATH')) {
     $path = dirname(__FILE__);
-    while (!file_exists($path . '/core/config/config.inc.php') && (strlen($path) > 1)) {
+    while (!file_exists($path . '/sitecore/config/config.inc.php') && (strlen($path) > 1)) {
         $path = dirname($path);
     }
-    define('MODX_CORE_PATH', $path . '/core/');
+    define('MODX_CORE_PATH', $path . '/sitecore/');
 }
 
 return [
     'name' => 'reCaptchaV3',
     'name_lower' => 'recaptchav3',
-    'version' => '1.0.3',
+    'version' => '1.0.5',
     'release' => 'beta',
     // Install package to site right after build
     'install' => true,

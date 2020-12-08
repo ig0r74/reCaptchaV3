@@ -20,6 +20,10 @@ if (!$modx->getPlaceholder('rcv3_initialized')) {
                     });
                 });
             };
+            // обновляем капчу каждую минуту
+            setInterval(function() {
+                grecaptcha.reset();
+            }, 60000);
         </script>
     ', true);
     $modx->setPlaceholder('rcv3_initialized', 1);
