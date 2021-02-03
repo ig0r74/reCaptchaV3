@@ -30,7 +30,7 @@ if (!$modx->getPlaceholder('rcv3_initialized')) {
 }
 
 $output = '
-    <span class="error_g-recaptcha-response error error_message">' . $error . '</span>
+    <span class="error_g-recaptcha-response error">' . $error . '</span>
     <input type="hidden" name="g-recaptcha-response">
 ';
 
