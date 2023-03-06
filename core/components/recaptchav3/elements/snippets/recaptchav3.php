@@ -16,11 +16,11 @@ class Captcha{
 
 if ($recaptcha) {
     $ObjCaptcha = new Captcha();
-    $data = $ObjCaptcha->getCaptcha($recaptcha, $secret, $url_google_api, $ip); 
+    $data = $ObjCaptcha->getCaptcha($recaptcha, $secret, $url_google_api, $ip);
 
-    if ($data->success) {
+    if ($data->success && $data->score >= 0.5) {
         return true;
-    } else {   
+    } else {
         $hook->addError('g-recaptcha-response', $modx->lexicon('recaptchav3_check_error'));
         $error_message = "";
         $error_message .= $modx->lexicon('recaptchav3_check_error_log') . "<br/>";
