@@ -1,4 +1,5 @@
 <?php
+$action = $action ?: 'ajaxform';
 // Register API keys at https://www.google.com/recaptcha/admin
 $site_key = $modx->getOption('formit.recaptcha_public_key', null, '');
 // reCAPTCHA supported languages: https://developers.google.com/recaptcha/docs/language
@@ -20,9 +21,14 @@ $token_key = $modx->getOption(
     true
 );
 
-// Form ID (fallback to resource URI)
+// Form ID (fallback to resource URI + unique identifier)
 $form_id = $modx->getOption('form_id', $scriptProperties, $modx->resource->get('uri'));
 $form_id = preg_replace('/[^A-Za-z_]/', '', $form_id);
+
+ 
+// Generate unique identifier for this form instance
+$unique_id = $modx->getOption('unique_id', $scriptProperties, uniqid('rcv3_', true));
+$unique_id = preg_replace('/[^A-Za-z0-9_]/', '_', $unique_id);
 
 if (!$modx->getPlaceholder('rcv3_initialized')) {
     $modx->regClientStartupScript(
@@ -31,25 +37,27 @@ if (!$modx->getPlaceholder('rcv3_initialized')) {
         . '&hl=' . $lang 
         . '"></script>'
     );
-    $modx->regClientScript('
-        <script>
-            grecaptcha.ready(function() {
-                grecaptcha.execute("' . $site_key . '", {action: "' . $form_id . '"}).then(function(token) {
-                    var el = document.querySelector("[name=\'' . $token_key . '\']");
-                    if (el) {
-                        el.value = token;
-                    }
-                });
-            });
-        </script>
-    ', true);
     $modx->setPlaceholder('rcv3_initialized', 1);
 }
 
-// Output hidden fields
+// Register form-specific script
+$modx->regClientScript('
+    <script>
+        grecaptcha.ready(function() {
+            grecaptcha.execute("' . $site_key . '", {action: "' . $action . '"}).then(function(token) {
+                var el = document.getElementById("' . $unique_id . '_token");
+                if (el) {
+                    el.value = token;
+                }
+            });
+        });
+    </script>
+', true);
+
+// Output hidden fields with unique IDs
 $output = '
-    <input type="hidden" name="' . $token_key . '">
-    <input type="hidden" name="' . $action_key . '" value="' . $form_id . '">
+    <input type="hidden" id="' . $unique_id . '_token" name="' . $token_key . '">
+    <input type="hidden" id="' . $unique_id . '_action" name="' . $action_key . '" value="' . $form_id . '">
 ';
 
 return $output;
