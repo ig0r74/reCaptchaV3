@@ -1,5 +1,10 @@
 <?php
-$action = $action ?: 'ajaxform';
+// Form ID (fallback to resource URI + unique identifier)
+$form_id = $modx->getOption('form_id', $scriptProperties, $modx->resource->get('uri')) ?: 'ajaxform';
+$form_id = preg_replace('/[^A-Za-z_]/', '', $form_id);
+
+$action = $action ?: $form_id;
+
 // Register API keys at https://www.google.com/recaptcha/admin
 $site_key = $modx->getOption('formit.recaptcha_public_key', null, '');
 // reCAPTCHA supported languages: https://developers.google.com/recaptcha/docs/language
@@ -20,11 +25,6 @@ $token_key = $modx->getOption(
     $modx->getOption('recaptchav3.token_key', null, 'recaptcha-token', true),
     true
 );
-
-// Form ID (fallback to resource URI + unique identifier)
-$form_id = $modx->getOption('form_id', $scriptProperties, $modx->resource->get('uri'));
-$form_id = preg_replace('/[^A-Za-z_]/', '', $form_id);
-
  
 // Generate unique identifier for this form instance
 $unique_id = $modx->getOption('unique_id', $scriptProperties, uniqid('rcv3_', true));
@@ -57,7 +57,7 @@ $modx->regClientScript('
 // Output hidden fields with unique IDs
 $output = '
     <input type="hidden" id="' . $unique_id . '_token" name="' . $token_key . '">
-    <input type="hidden" id="' . $unique_id . '_action" name="' . $action_key . '" value="' . $form_id . '">
+    <input type="hidden" id="' . $unique_id . '_action" name="' . $action_key . '" value="' . $action . '">
 ';
 
 return $output;
